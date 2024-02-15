@@ -5,40 +5,34 @@ import androidx.paging.PagingState
 import com.stepanov.pagingreddit.repository.ApiService
 import com.stepanov.pagingreddit.repository.HotPost
 import com.stepanov.pagingreddit.repository.dto.toHotPost
+import okio.IOException
+import retrofit2.HttpException
 
-class RedditPagingSource(private val apiService: ApiService) : PagingSource<Int, HotPost>() {
-    override fun getRefreshKey(state: PagingState<Int, HotPost>): Int? {
+class RedditPagingSource(private val apiService: ApiService) : PagingSource<String, HotPost>() {
+    override fun getRefreshKey(state: PagingState<String, HotPost>): String? {
         return null
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, HotPost> {
+    override suspend fun load(params: LoadParams<String>): LoadResult<String, HotPost> {
+
         return try {
-
-            val currentPage = params.key ?: 1
-            val response = apiService.loadValue(currentPage)
-            val data = response.body()?.let { redditDTO ->
-                redditDTO.data.children.map {
-                    it.data.toHotPost()
-                }
-            }
-            val responseData = mutableListOf<HotPost>()
-            data?.let {
-                responseData.addAll(it)
-            }
-
-
-
-
-            LoadResult.Page(
-                data = responseData,
-                prevKey = if (currentPage == 1) null else -1,
-                nextKey = currentPage.plus(1)
+            val response = apiService.loadValue(
+                count = params.loadSize,
+                after = params.key.toString(),
+                before = null
             )
 
-        } catch (e: Exception) {
-            LoadResult.Error(e)
+            val listing = response.body()?.data
+            val redditPosts = listing?.children?.map { it.data.toHotPost() }
+            LoadResult.Page(
+                redditPosts ?: listOf(),
+                listing?.before,
+                listing?.after
+            )
+        } catch (exception: IOException) {
+            return LoadResult.Error(exception)
+        } catch (exception: HttpException) {
+            return LoadResult.Error(exception)
         }
-
-
     }
 }

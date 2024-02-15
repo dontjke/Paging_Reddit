@@ -14,7 +14,6 @@ class HotPostsPagerAdapter : PagingDataAdapter<HotPost, MyViewHolder>(diffCallba
     inner class MyViewHolder(val binding: HotPostItemBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-
     companion object {
         val diffCallback = object : DiffUtil.ItemCallback<HotPost>() {
             override fun areItemsTheSame(oldItem: HotPost, newItem: HotPost): Boolean {
@@ -24,14 +23,15 @@ class HotPostsPagerAdapter : PagingDataAdapter<HotPost, MyViewHolder>(diffCallba
             override fun areContentsTheSame(oldItem: HotPost, newItem: HotPost): Boolean {
                 return oldItem == newItem
             }
-
         }
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = getItem(position)
         holder.binding.apply {
-            textView.text = currentItem?.title
+            titleTextView.text = currentItem?.title
+            numCommentsTextView.text = currentItem?.numComments.toString()
+            scoreTextView.text = currentItem?.score.toString()
         }
     }
 

@@ -7,7 +7,7 @@ data class DataDTO(
     @SerializedName("after")
     val after: String,
     @SerializedName("before")
-    val before: Any,
+    val before: String?,
     @SerializedName("children")
     val children: List<ChildrenDTO>,
     @SerializedName("dist")
