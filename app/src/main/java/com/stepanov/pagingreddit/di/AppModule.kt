@@ -2,7 +2,6 @@ package com.stepanov.pagingreddit.di
 
 
 import com.stepanov.pagingreddit.repository.ApiService
-import com.stepanov.pagingreddit.repository.dto.ResponseApi
 import com.stepanov.pagingreddit.utils.Constants
 import dagger.Module
 import dagger.Provides
